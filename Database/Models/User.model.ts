@@ -1,10 +1,10 @@
 import { Schema } from "mongoose";
 import { Message,MessageSchema } from "./Message.model";
+import mongoose from "mongoose";
 export interface User extends Document{
     username:string,
     email:string,
     password:string,
-    createdAt:Date,
     VerifyOTP:string,
     OTPExpiry:Date,
     isMessageAccepted:boolean,
@@ -45,9 +45,10 @@ export const UserSchema:Schema<User>=new Schema({
         type:Boolean,
         default:true
     },
-    messages:[MessageSchema],
-    createdAt:{
-        type:Date,
-        default:Date.now
-    }
+    messages:[MessageSchema]
+    },{
+    timestamps:true
 })
+
+const UserModel=(mongoose.models.User as mongoose.Model<User>) || mongoose.model<User>("User",UserSchema);
+export default UserModel;
