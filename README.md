@@ -1,6 +1,6 @@
 # Nexus – Connect. Code. Create. 🚀
 
-![Nexus Banner](https://via.placeholder.com/1200x600.png?text=Nexus+-+Connect.+Code.+Create.)  
+![Nexus Banner]([https://via.placeholder.com/1200x600.png?text=Nexus+-+Connect.+Code.+Create.](https://imgur.com/a/jV7flxi))  
 *A developer-focused collaborative pre-production platform powered by AI*
 
 Nexus is the ultimate workspace where developers **plan, brainstorm, and structure** projects **before writing a single line of production code**. It combines real-time communication, intelligent project management, GitHub integration, and AI-assisted tools — all in one unified dashboard.
