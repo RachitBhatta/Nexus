@@ -1,7 +1,11 @@
-# Nexus – Connect. Code. Create. 🚀
+# Nexus – Connect. Code. Create.
 
-![Nexus Banner]([[https://via.placeholder.com/1200x600.png?text=Nexus+-+Connect.+Code.+Create.](https://imgur.com/a/jV7flxi)](https://i.imgur.com/fbQdA6z.png))  
-*A developer-focused collaborative pre-production platform powered by AI*
+<div align="center">
+  <img src="https://i.imgur.com/fbQdA6z.png" alt="Nexus Logo" width="180"/>
+  <h3>A developer-focused collaborative pre-production platform powered by AI</h3>
+</div>
+
+<br/>
 
 Nexus is the ultimate workspace where developers **plan, brainstorm, and structure** projects **before writing a single line of production code**. It combines real-time communication, intelligent project management, GitHub integration, and AI-assisted tools — all in one unified dashboard.
 
@@ -20,9 +24,9 @@ Nexus is the ultimate workspace where developers **plan, brainstorm, and structu
 | **Real-Time Communication**   | Project chat rooms · Voice & Video calls (WebRTC) · Code snippet sharing · DMs |
 | **Project Management**        | Workspaces · GitHub sync · Kanban boards · Versioned notes · AI templates |
 | **Developer Tools & AI**      | Algorithm suggestions · Collaborative editor · Snippet execution · Project analytics |
-| **UI/UX**                     | Next.js App Router · shadcn/ui components · Dark/Light mode · Toast notifications |
+| **UI/UX**                     | Next.js App Router · shadcn/ui · Dark/Light mode · Toast notifications  |
 
-## 🚀 Future Roadmap
+## Future Roadmap
 
 - Live pair programming with cursor tracking
 - AI-powered code review & suggestions
@@ -35,7 +39,7 @@ Nexus is the ultimate workspace where developers **plan, brainstorm, and structu
 ```plaintext
 Frontend:   Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, shadcn/ui
 Backend:    Node.js, Firebase Auth + Firestore
-Real-time:  Socket.IO, WebRTC (PeerJS / simple-peer)
-AI:         OpenAI API (GPT-4o), custom prompts
+Real-time:  Socket.IO, WebRTC (simple-peer)
+AI:         OpenAI API (GPT-4o)
 Integrations: GitHub OAuth & API
-Deployment: Vercel (Frontend), Firebase Hosting / Cloud Functions
+Deployment: Vercel + Firebase
