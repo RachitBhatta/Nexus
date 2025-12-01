@@ -1,43 +1,92 @@
-import {Container,Button,Text,Tailwind,Img,Link,Hr} from "@react-email/components"
-interface verifyEmailProps{
-    username:string,
-    token:string
+import {
+  Html,
+  Body,
+  Head,
+  Preview,
+  Tailwind,
+  Container,
+  Section,
+  Img,
+  Heading,
+  Text,
+  Link,
+} from "@react-email/components";
+
+interface VerifyEmailProps {
+  otp: string;
+  username: string;
 }
-export default function verifyEmail({username,token}:verifyEmailProps){
-    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}verify/${token}`;
-    return(
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "#";
+
+export default function VerifyEmail({ otp, username }: VerifyEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Preview>Verify your Nexus account</Preview>
+
+      <Body className="bg-gray-300">
         <Tailwind>
-            <Container className="max-x-xl max-auto bg-white border-rounded px-6 py-8">
-                <Img
-                alt="Nexus Logo"
-                width={200}
-                height={120}
-                className="rounded-2xl mx-auto my-12"
+          <Container className="bg-white max-w-[480px] rounded-xl shadow-md px-6 py-8">
+
+            {/* Logo */}
+            <Section className="flex justify-center mb-6 ">
+              <Img
                 src="https://i.imgur.com/fbQdA6z.png"
-                />
-                <Text className="text-gray-800 text-base mb-2">Hi,{username},</Text>
-                <Text className="text-semibold text-2xl leading-tight text-gray-900">Please,Verify Your Account</Text>
-                <Text className="mb-4 text-semibold leading-relaxed text-gray-600">To activate your workspace,click the button below.<br/>This helps to keep your account secure</Text>
-                <Button
-                href={verificationUrl}
-                className="bg-amber-500 hover:bg-amber-600 text-white  border-box w-full mx-auto font-semibold rounded-lg py-3 px-8 text center mt-5"
-                ></Button>
-                <Container className="bg-amber-50 border-l-4 border-amber-500 rounded-md p-4 mt-6 mb-6">
-                    <Text className="text-amber-800 font-semibold text-sm text-center m-0">
-                        ⏰ This link will expire in 10 minutes
-                    </Text>
-                </Container>
-                <Hr className="border-gray-300 my-6" />
-                <Text className="text-center mt-4 text-gray-600">If you didnt request this email,<br/>you can ignore this.</Text>
-                <Text className="ml-1.5 text-gray-600">
-                    Thank You,
-                    <br/>
-                    <span className="font-semibold">Nexus Team</span>
-                    </Text>
-                <Text className="text-gray-400 text-xs text-center mt-8">
-                    For security reasons, never share this link with anyone.
-                </Text>
-            </Container>
+                width="250"
+                height="125"
+                className="rounded-xl"
+                alt="Nexus Logo"
+              />
+            </Section>
+
+            {/* Greeting */}
+            <Text className="text-xl text-gray-800 mb-3">
+              Hi {username},
+            </Text>
+
+            {/* Heading */}
+            <Heading className="text-[22px] font-semibold text-gray-900 mb-4">
+              Verify your email address
+            </Heading>
+
+            {/* Body Text */}
+            <Text className="text-gray-600 leading-relaxed mb-6">
+              Thanks for creating a Nexus account. To confirm your identity,
+              please enter the verification code below.  
+              If you didn’t request this, you can safely ignore this email.
+            </Text>
+
+            {/* OTP Box */}
+            <Section className="bg-gray-50 border border-gray-200 rounded-lg py-5 text-center mb-4">
+              <Text className="text-sm text-gray-700 mb-1">
+                Your Verification Code
+              </Text>
+              <Text className="text-3xl font-bold tracking-widest text-gray-900">
+                {otp}
+              </Text>
+              <Text className="text-xs text-rose-500 mt-2">
+                Valid for 10 minutes
+              </Text>
+            </Section>
+
+            {/* Footer */}
+            <Text className="text-xs text-gray-500 leading-relaxed mt-8">
+              This message was produced by the Nexus Team in Nepal.  
+              All rights reserved. View our{" "}
+              <Link
+                href={BASE_URL}
+                target="_blank"
+                className="text-blue-600 underline"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </Text>
+
+          </Container>
         </Tailwind>
-    )
+      </Body>
+    </Html>
+  );
 }
