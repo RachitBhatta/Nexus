@@ -3,13 +3,38 @@ import { Message,MessageSchema } from "./Message.model";
 import mongoose from "mongoose";
 export interface User extends Document{
     username:string,
-    email:string,
     password:string,
+    email:string,
+
+    //Email verification
     VerifyOTP:string,
-    OTPExpiry:Date,
-    isMessageAccepted:boolean,
+    OTPexpiry:Date,
     isVerified:boolean,
-    messages:Message[]
+
+    //2FA
+    twoFactorEnabled:true,
+    twoFactorSecret?:string,
+    backupCode?:string,
+
+    //Messages
+    isMessageAccepted:boolean,
+    message:Message[]
+
+    //Security Traking
+    lastLogin?:string,
+    accountLockedUntil:Date,
+    failedLoginAttemts:string
+
+    //Password reset
+    passwordResetExpiry:Date,
+    resetPasswordToken:string
+
+    //OAuth
+    googleId:string,
+    githubId:string
+
+    createdAt:Date,
+    UpdatedAt:Date
 }
 
 export const UserSchema:Schema<User>=new Schema({
