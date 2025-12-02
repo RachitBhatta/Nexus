@@ -24,7 +24,7 @@ export default function WelcomeEmail({ username }: WelcomeEmailProps) {
       <Head />
       <Preview>Welcome to Nexus — Build faster with us</Preview>
 
-      <Body className="bg-gray-100 font-sans p-6">
+     <Body className="font-sans" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
         <Tailwind>
             <Container className="bg-white w-[480px] rounded-xl shadow-lg p-6 mx-auto w-full">
 
@@ -76,3 +76,4 @@ export default function WelcomeEmail({ username }: WelcomeEmailProps) {
     </Html>
   );
 }
+
