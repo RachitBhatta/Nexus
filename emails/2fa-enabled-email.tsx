@@ -32,7 +32,7 @@ export default function TwoFAEnabled({
       <Head />
       <Preview>Two-Factor Authentication Enabled on your Nexus account</Preview>
 
-      <Body className="bg-gray-100 font-sans p-6">
+      <Body  className="font-sans" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
         <Tailwind>
           <Container className="bg-white w-full max-w-[480px] rounded-xl shadow-lg p-6 mx-auto">
 
@@ -94,3 +94,4 @@ export default function TwoFAEnabled({
     </Html>
   );
 }
+
