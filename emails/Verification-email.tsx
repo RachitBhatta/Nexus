@@ -25,7 +25,7 @@ export default function VerifyEmail({ otp, username }: VerifyEmailProps) {
       <Head />
       <Preview>Verify your Nexus account</Preview>
 
-      <Body className="bg-gray-300">
+      <Body className="font-sans" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
         <Tailwind>
           <Container className="bg-white max-w-[480px] rounded-xl shadow-md px-6 py-8">
 
