@@ -21,7 +21,7 @@ interface Sessions extends Document{
 export const SessionSchema:Schema<Sessions>=new Schema(
     {
         userId:{
-            userId:Schema.Types.ObjectId,
+            type:Schema.Types.ObjectId,
             ref:"User",
             required:true,
             index:true
