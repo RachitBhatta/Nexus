@@ -12,7 +12,7 @@ export interface User extends Document{
     isVerified:boolean,
 
     //2FA
-    twoFactorEnabled:true,
+    twoFactorEnabled:boolean,
     twoFactorSecret?:string,
     backupCode?:string,
 
@@ -22,58 +22,149 @@ export interface User extends Document{
 
     //Security Traking
     lastLogin?:string,
-    accountLockedUntil:Date,
-    failedLoginAttemts:string
+    accountLockedUntil?:Date,
+    failedLoginAttemts:number
 
     //Password reset
-    passwordResetExpiry:Date,
-    resetPasswordToken:string
+    passwordResetExpiry?:Date,
+    resetPasswordToken?:string
 
     //OAuth
-    googleId:string,
-    githubId:string
+    googleId?:string,
+    githubId?:string
 
     createdAt:Date,
     UpdatedAt:Date
 }
 
-export const UserSchema:Schema<User>=new Schema({
-    username:{
-        type:String,
-        required:[true,"Username is required"],
-        unique:true,
-        trim:true
+export const UserSchema: Schema<User> = new Schema(
+  {
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      unique: true,
+      trim: true,
+      minlength: [3, "Username must be at least 3 characters"],
+      maxlength: [30, "Username must be no more than 30 characters"]
     },
-    password:{
-        type:String,
-        required:[true,"Password is required"]
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      lowercase: true,
+      match: [
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Please use a valid email address"
+      ]
     },
-    email:{
-        type:String,
-        required:[true,"Email is required"],
-        unique:true,
-        match:[/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g,"Please use a valid email address"]
+    password: {
+      type: String,
+      required: function():boolean {
+        return !this.googleId && !this.githubId;
+      }
     },
-    VerifyOTP:{
-        type:String,
-        required:[true,'VerifyCode is required']
+    
+    // Email verification
+    VerifyOTP: {
+      type: String,
+      required: [true, "Verify code is required"]
     },
-    OTPExpiry:{
-        type:Date,
-        required:[true,'VerifyCodeExpiry is required']
+    OTPexpiry: {
+      type: Date,
+      required: [true, "OTP expiry is required"]
     },
-    isVerified:{
-        type:Boolean,
-        default:false
+    isVerified: {
+      type: Boolean,
+      default: false
     },
-    isMessageAccepted:{
-        type:Boolean,
-        default:true
+    
+    // 2FA
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false
     },
-    messages:[MessageSchema]
-    },{
-    timestamps:true
-})
+    twoFactorSecret: {
+      type: String
+    },
+    backupCode: [{
+      type: String
+    }],
+    
+    // Messages
+    isMessageAccepted: {
+      type: Boolean,
+      default: true
+    },
+    message: [MessageSchema],
+    
+    // Security tracking
+    lastLogin: {
+      type: Date
+    },
+    failedLoginAttemts: {
+      type: Number,
+      default: 0
+    },
+    accountLockedUntil: {
+      type: Date
+    },
+    
+    // Password reset
+    resetPasswordToken: {
+      type: String
+    },
+    passwordResetExpiry: {
+      type: Date
+    },
+    
+    // OAuth IDs
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true // Allows multiple null values
+    },
+    githubId: {
+      type: String,
+      unique: true,
+      sparse: true
+    }
+  },
+  {
+    timestamps: true // Adds createdAt and updatedAt automatically
+  }
+);
+
+UserSchema.index({email:1});
+UserSchema.index({username:1});
+UserSchema.index({googleId:1});
+UserSchema.index({githubId:1});
+UserSchema.index({VerifyOTP:1});
+UserSchema.index({resetPasswordToken:1})
+
+
+//Methods
+//To check if account is locked
+ UserSchema.methods.isAccountLocked=function():boolean{
+    return !!(this.accountLockedUntil && this.accountLockedUntil>new Date());
+}
+//Locking the account for 30 min
+UserSchema.methods.failedLoginAttemts=async function():Promise<void>{
+    this.failedLoginAttemts+=1;
+
+    if(this.failedLoginAttemts>=5){
+        this.accountLockedUntil=new Date(Date.now()+30*60*1000);
+    }
+    await this.save();
+}
+//Reset Login Attemps
+UserSchema.methods.resetLoginAttemps=async function(){
+    if(this.isAccountLocked==false){
+        this.failedLoginAttemts=0;
+        this.accountLockedUntil=undefined;
+        await this.save;
+    }
+}
+
 
 const UserModel=(mongoose.models.User as mongoose.Model<User>) || mongoose.model<User>("User",UserSchema);
 export default UserModel;
