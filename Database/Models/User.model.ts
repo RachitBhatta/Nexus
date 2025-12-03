@@ -1,7 +1,7 @@
-import { Schema } from "mongoose";
+import { Schema, Document } from "mongoose";
 import { Message,MessageSchema } from "./Message.model";
 import mongoose from "mongoose";
-export interface User extends Document{
+export interface User extends Document{   
     username:string,
     password:string,
     email:string,
@@ -14,17 +14,15 @@ export interface User extends Document{
     //2FA
     twoFactorEnabled:boolean,
     twoFactorSecret?:string,
-    backupCode?:string,
+    backupCodes?:string[],
 
     //Messages
     isMessageAccepted:boolean,
     message:Message[]
 
     //Security Traking
-    lastLogin?:string,
-    accountLockedUntil?:Date,
-    failedLoginAttemts:number
-
+    lastLogin?:Date,    accountLockedUntil?:Date,
+    failedLoginAttempts:number
     //Password reset
     passwordResetExpiry?:Date,
     resetPasswordToken?:string
@@ -34,7 +32,7 @@ export interface User extends Document{
     githubId?:string
 
     createdAt:Date,
-    UpdatedAt:Date
+    updatedAt:Date
 }
 
 export const UserSchema: Schema<User> = new Schema(
@@ -86,7 +84,7 @@ export const UserSchema: Schema<User> = new Schema(
     twoFactorSecret: {
       type: String
     },
-    backupCode: [{
+    backupCodes: [{
       type: String
     }],
     
@@ -101,7 +99,7 @@ export const UserSchema: Schema<User> = new Schema(
     lastLogin: {
       type: Date
     },
-    failedLoginAttemts: {
+    failedLoginAttempts: {
       type: Number,
       default: 0
     },
@@ -148,8 +146,8 @@ UserSchema.index({resetPasswordToken:1})
     return !!(this.accountLockedUntil && this.accountLockedUntil>new Date());
 }
 //Locking the account for 30 min
-UserSchema.methods.failedLoginAttemts=async function():Promise<void>{
-    this.failedLoginAttemts+=1;
+UserSchema.methods.failedLoginAttempts=async function():Promise<void>{
+    this.failedLoginAttempts+=1;
 
     if(this.failedLoginAttemts>=5){
         this.accountLockedUntil=new Date(Date.now()+30*60*1000);
@@ -158,7 +156,7 @@ UserSchema.methods.failedLoginAttemts=async function():Promise<void>{
 }
 //Reset Login Attemps
 UserSchema.methods.resetLoginAttemps=async function(){
-    if(this.isAccountLocked==false){
+    if(!this.isAccountLocked()){
         this.failedLoginAttemts=0;
         this.accountLockedUntil=undefined;
         await this.save;
