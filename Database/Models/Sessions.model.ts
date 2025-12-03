@@ -18,10 +18,10 @@ interface Sessions extends Document{
     createdAt:Date
 }
 
-export const SessionSchema:Schema<Sesdsions>=new Schema(
+export const SessionSchema:Schema<Sessions>=new Schema(
     {
         userId:{
-            userId:Schema.Types.ObjectId,
+            type:Schema.Types.ObjectId,
             ref:"User",
             required:true,
             index:true
