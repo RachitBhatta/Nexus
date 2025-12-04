@@ -104,4 +104,4 @@ SessionSchema.statics.deleteExpiredSessions=async function(){
 
 const SessionModel=mongoose.models.Sessions as mongoose.Model<Sessions>||mongoose.model<Sessions>("Session",SessionSchema);
 
-export default SessionModel
+export default SessionModel;
