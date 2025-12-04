@@ -39,7 +39,7 @@ export function generateSecurityToken(length:number=32):string{
 
 export function generateBackupCodes(count:number=8):string[]{
     const codes:string[]=[];
-    for(let i=0;i<length;i++){
+    for(let i=0;i<count;i++){
         const code=crypto.randomBytes(4).toString("hex").toUpperCase();
         codes.push(code);
     }
