@@ -30,7 +30,7 @@ export function generateAccessToken(payload: JWTPayload): string {
     try {
         const token = jwt.sign(payload, JWT_SECRET, {
             expiresIn: JWT_EXPIRES_IN,
-            issuer: 'nexus-App',
+            issuer: 'nexus-app',
             audience: "nexus-user"
         })
         return token;
@@ -47,7 +47,7 @@ export function generateRefreshToken(userId: string): string {
             type: "refresh"
         }
         const token = jwt.sign(payload, JWT_SECRET, {
-            expiresIn: JWT_EXPIRES_IN,
+            expiresIn: REFRESH_TOKEN_EXPIRES_IN,
             issuer: "nexus-app"
         });
         return token;
@@ -98,7 +98,7 @@ export function generateResetToken(email:string):string{
             type:"password-reset"
         }
         const token=jwt.sign(payload,JWT_SECRET,{
-            expiresIn:JWT_EXPIRES_IN,
+            expiresIn:RESET_TOKEN_EXPIRES_IN,
             issuer:"nexus-app"
         })
         return token;
