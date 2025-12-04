@@ -3,7 +3,7 @@ import z from "zod";
 export const SignInSchema=z.object({
     identifier:z
                 .string()
-                .min(1,"Username or Password is required")
+                .min(1,"Username or Email is required")
                 .transform((val)=>val.trim().toLowerCase()),
     password:z
                 .string()
@@ -12,8 +12,8 @@ export const SignInSchema=z.object({
 })
 
 export const twoFASchema=z.object({
-    identifier:z.string(),
-    password:z.string(),
+    identifier:z.string().min(1, "Email or Username is required"),
+    password:z.string().min(1, "Password is required"),
     twoFACode:z
             .string()
             .length(6,"Two factor Authentication code must be 6 digits")

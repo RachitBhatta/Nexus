@@ -31,7 +31,7 @@ export const changePasswordSchema=z.object({
     .regex(/[@$!%*?&#]/, "Password must contain at least one special character")
 }).refine((data)=>data.currentPassword !== data.newPassword,{
     message:"New Password should be different from current password",
-    path:["new Password"]
+    path:["newPassword"]
 })
 
 export type forgotPasswordInput=z.infer<typeof forgotPasswordSchema>;
