@@ -1,4 +1,4 @@
-import { sendEmail } from "./resend";
+import { sendEmail } from "../resend";
 import SubscriptionUpgrade from "@/emails/subscribtion-email";
 
 export function sendSubscribtion(

@@ -1,4 +1,4 @@
-import { sendEmail } from "./resend";
+import { sendEmail } from "../resend";
 import AccountRecovery from "@/emails/account-recovery-email";
 
 export function sendAccountRecovery(

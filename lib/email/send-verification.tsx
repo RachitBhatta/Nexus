@@ -1,5 +1,5 @@
 import VerifyEmail from "@/emails/Verification-email";
-import { sendEmail } from "./resend";
+import { sendEmail } from "../resend";
 
 export function sendVerifyEmail(
     to:string,

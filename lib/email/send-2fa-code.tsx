@@ -1,4 +1,4 @@
-import { sendEmail } from "./resend";
+import { sendEmail } from "../resend";
 import TwoFAEmail from "@/emails/2fa-email";
 
 export async function sendTwoFACode(
