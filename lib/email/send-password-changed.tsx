@@ -1,4 +1,4 @@
-import { sendEmail } from "./resend";
+import { sendEmail } from "../resend";
 import PasswordChanged from "@/emails/password-changed";
 
 export function sendPasswordChanged(

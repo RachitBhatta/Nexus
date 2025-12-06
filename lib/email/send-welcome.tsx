@@ -1,5 +1,5 @@
 import WelcomeEmail from "@/emails/welcome"
-import { sendEmail } from "./resend"
+import { sendEmail } from "../resend"
 
 export function sendWelcome(
     to:string,

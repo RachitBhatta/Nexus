@@ -1,4 +1,4 @@
-import { sendEmail } from "./resend";
+import { sendEmail } from "../resend";
 import SuspiciousLogin from "@/emails/sus-login-email";
 
 export function sendSusLogin(
