@@ -1,5 +1,5 @@
 import TwoFAEnabled from "@/emails/2fa-enabled-email";
-import { sendEmail } from "./sendEmail";
+import { sendEmail } from "./resend";
 
 
 export function sendTwoFAEnabled(
