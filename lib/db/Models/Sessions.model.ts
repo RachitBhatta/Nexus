@@ -1,7 +1,7 @@
 import mongoose,{Schema,Document} from "mongoose"
 import { userAgent } from "next/server"
 
-interface Sessions extends Document{
+export interface Sessions extends Document{
     userId:mongoose.Types.ObjectId,
     token:string,
     deviceInfo:{

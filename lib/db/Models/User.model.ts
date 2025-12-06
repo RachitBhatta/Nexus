@@ -21,7 +21,8 @@ export interface User extends Document{
     message:Message[]
 
     //Security Traking
-    lastLogin?:Date,    accountLockedUntil?:Date,
+    lastLogin?:Date,  
+    accountLockedUntil?:Date,
     failedLoginAttempts:number
     //Password reset
     passwordResetExpiry?:Date,
@@ -146,20 +147,20 @@ UserSchema.index({resetPasswordToken:1})
     return !!(this.accountLockedUntil && this.accountLockedUntil>new Date());
 }
 //Locking the account for 30 min
-UserSchema.methods.failedLoginAttempts=async function():Promise<void>{
+UserSchema.methods.failedLoginAttempt=async function():Promise<void>{
     this.failedLoginAttempts+=1;
 
-    if(this.failedLoginAttemts>=5){
+    if(this.failedLoginAttempts>=5){
         this.accountLockedUntil=new Date(Date.now()+30*60*1000);
     }
     await this.save();
 }
 //Reset Login Attemps
-UserSchema.methods.resetLoginAttemps=async function(){
+UserSchema.methods.resetLoginAttempts=async function(){
     if(!this.isAccountLocked()){
-        this.failedLoginAttemts=0;
+        this.failedLoginAttempts=0;
         this.accountLockedUntil=undefined;
-        await this.save;
+        await this.save();
     }
 }
 
