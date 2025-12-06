@@ -1,5 +1,5 @@
 
-import { sendEmail } from "./sendEmail";
+import { sendEmail } from "./resend";
 import PasswordResetEmail from "@/emails/password-reset-email";
 
 export function sendResetPassword(

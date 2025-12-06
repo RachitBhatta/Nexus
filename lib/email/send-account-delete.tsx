@@ -1,4 +1,4 @@
-import { sendEmail } from "./sendEmail";
+import { sendEmail } from "./resend";
 import AccountDeletedEmail from "@/emails/account-deleted-email";
 
 export async function sendAccountDeletedEmail(
