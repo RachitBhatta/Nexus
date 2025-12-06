@@ -26,7 +26,7 @@ export default function WelcomeEmail({ username }: WelcomeEmailProps) {
 
      <Body className="font-sans" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
         <Tailwind>
-            <Container className="bg-white w-[480px] rounded-xl shadow-lg p-6 mx-auto w-full">
+            <Container className="bg-white w-[480px] rounded-xl shadow-lg p-6 mx-auto ">
 
           {/* Logo */}
           <Section className="text-center mb-6">

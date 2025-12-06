@@ -12,7 +12,7 @@ export default function PasswordResetEmail({username,resetPasswordLink}:Password
             <Preview>Password-Reset-Email from Nexus.</Preview>
             <Body  className="font-sans" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
                 <Tailwind>
-                    <Container className="shadow-md mx-auto bg-white w-[480px] rounded-xl p-6 w-full">
+                    <Container className="shadow-md mx-auto bg-white w-[480px] rounded-xl p-6 ">
                         <Section className="flex justify-center my-3 py-3 ">
                             <Img
                                 src="https://i.imgur.com/fbQdA6z.png"

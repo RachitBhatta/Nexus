@@ -6,18 +6,19 @@ export async function sendTwoFACode(
     twoFACode:string,
     device:string,
     location:string,
-    expiresIn:number
+    expiresIn:number,
+    to:string
 ){
     return sendEmail({
         to,
-        subject:"",
+        subject:"Two Factor authentication code has been sent",
         react:(
             <TwoFAEmail
             username={username}
             twoFACode={twoFACode}
             device={device}
             location={location}
-            expiresIn={expiresIn}
+            expiresInMinutes={expiresIn}
 
             />
         )
