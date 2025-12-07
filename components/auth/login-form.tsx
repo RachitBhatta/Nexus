@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import { SignInInput } from "@/lib/db/Schemas/SignIn.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInSchema } from "@/lib/db/Schemas/SignIn.schema";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle, } from "../ui/card";
 import { Alert, AlertDescription } from "../ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Loader, Loader2 } from "lucide-react";
+import { Button } from "../ui/button";
+import Link from "next/link";
+import OAuthButton from "./oauth-button";
 
 export function LoginForm(){
     const router=useRouter;
@@ -73,18 +76,74 @@ export function LoginForm(){
                         </label>
                         <input 
                             id="identifier" 
-                            className=""
                             type="text"
                             placeholder="ex@example.com"
                             {...register("identifier")}
                             disabled={isLoading}
                             arial-invalid={!!errors.identifier}
-                        ></input>
+                        />
                         {errors.identifier &&(
                             <p className="text-sm text-destructive">{errors.identifier.message}</p>
                         )}
                     </div>
-
+                    <div className="space-y-2">
+                        <label htmlFor="password" className="text-sm font medium">Password</label>
+                        <div className="relative">
+                            <input
+                                id="password"
+                                type={showPassword?"text":"password"}
+                                placeholder="••••••••"
+                                {...register("password")}
+                                disabled={isLoading}
+                                aria-invalid={!!errors.password}
+                            />
+                            <button
+                                type="button"
+                                onClick={()=>setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                                {showPassword?<EyeOff className="h-4 w-4"/>:<Eye className="h-4 w-4"/>}
+                            </button>
+                        </div>
+                        {errors.password && (
+                            <p className="text-sm text-destructive">{errors.password.message}</p>
+                        )}
+                    </div>
+                    <div className="flex-center justify-end items-center">
+                        <Link 
+                            href="/forgot-password"
+                            className="text-sm hover:underline text-primary"
+                        >
+                            Forgot Password?
+                        </Link>
+                    </div>
+                    <Button>
+                        {isLoading?(
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                                Signing in...
+                            </>
+                        ):(
+                            "Sign In"
+                        )}
+                    </Button>
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center uppercase text-xs">
+                            <span className="bg-background px-2 text-muted-foreground">
+                                Or continue with
+                            </span>
+                        </div> 
+                    </div>
+                    <OAuthButton disabled={isLoading}/>
+                    <p className="text-center text-sm text-muted-foreground">
+                        Don't have an account?{" "}
+                        <Link href="/signup" className="text-primary hover:underline font-medium">
+                        Sign up
+                        </Link>
+                    </p>
                 </form>
             </CardContent>
         </Card>
