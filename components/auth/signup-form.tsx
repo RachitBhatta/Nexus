@@ -12,6 +12,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import OAuthButton from "./oauth-button";
 import Link from "next/link";
+import PasswordStrengthMeter from "./password-strength-meter";
 export default function SignUpForm(){
     const router=useRouter()
     const [isLoading,setIsLoading]=useState(false);
@@ -49,7 +50,7 @@ export default function SignUpForm(){
                 router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
             },2000)
         } catch (error) {
-            setError(error instanceof Error?error.message:"An error occured during sign up process")
+            setError(error instanceof Error?error.message:"An error occurred during sign up process")
         }finally{
             setIsLoading(false)
         }

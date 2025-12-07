@@ -13,7 +13,7 @@ import Link from "next/link";
 import OAuthButton from "./oauth-button";
 
 export function LoginForm(){
-    const router=useRouter;
+    const router=useRouter();
     const [isLoading,setIsLoading]=useState(false);
     const [error,setError]=useState<string>("");
     const [showPassword,setShowPassword]=useState(false);
@@ -80,14 +80,14 @@ export function LoginForm(){
                             placeholder="ex@example.com"
                             {...register("identifier")}
                             disabled={isLoading}
-                            arial-invalid={!!errors.identifier}
+                            aria-invalid={!!errors.identifier}
                         />
                         {errors.identifier &&(
                             <p className="text-sm text-destructive">{errors.identifier.message}</p>
                         )}
                     </div>
                     <div className="space-y-2">
-                        <label htmlFor="password" className="text-sm font medium">Password</label>
+                        <label htmlFor="password" className="text-sm font-medium">Password</label>
                         <div className="relative">
                             <input
                                 id="password"
@@ -109,7 +109,7 @@ export function LoginForm(){
                             <p className="text-sm text-destructive">{errors.password.message}</p>
                         )}
                     </div>
-                    <div className="flex-center justify-end items-center">
+                    <div className="flex justify-end items-center">
                         <Link 
                             href="/forgot-password"
                             className="text-sm hover:underline text-primary"
