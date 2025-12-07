@@ -12,13 +12,12 @@ export default function OAuthButton({disabled=false}:OAuthButtonProps){
     const [loadingProvider,setLoadingProvider]=useState<string | null>(null);
     const handleOAuthLogin=(provider:"google"|"github")=>{
         setLoadingProvider(provider);
-        try {
-            const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
-            window.location.href=`${BASE_URL}/api/auth/oauth/${provider}`
-        } catch (error) {
-            console.log(`${provider} OAuth Error`,error);
-            setLoadingProvider(null);
-        }
+        
+        const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+        window.location.href=`${BASE_URL}/api/auth/oauth/${provider}`
+        
+        
+        
     }
     return(
         <div className="grid grid-rows-2 gap-y-2 ">
