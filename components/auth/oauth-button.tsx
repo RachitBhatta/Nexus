@@ -13,11 +13,13 @@ export default function OAuthButton({disabled=false}:OAuthButtonProps){
     const handleOAuthLogin=(provider:"google"|"github")=>{
         setLoadingProvider(provider);
         
-        const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
-        window.location.href=`${BASE_URL}/api/auth/oauth/${provider}`
-        
-        
-        
+        try {
+            const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+            window.location.href=`${BASE_URL}/api/auth/oauth/${provider}`;
+        } catch (error) {
+            console.error('OAuth redirect failed:', error);
+            setLoadingProvider(null);
+        }   
     }
     return(
         <div className="grid grid-rows-2 gap-y-2 ">
