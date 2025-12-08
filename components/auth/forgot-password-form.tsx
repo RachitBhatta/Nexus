@@ -20,11 +20,11 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { Input } from "../ui/input";
 
-export default function forgotPasswordForm() {
+export default function ForgotPasswordForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState(false);
-    const [emailsent, setEmailSent] = useState("");
+    const [emailSent, setEmailSent] = useState("");
 
     const {
         register,
@@ -42,12 +42,12 @@ export default function forgotPasswordForm() {
         try {
             const response = await fetch("/api/auth/forgot-password", {
                 method: "POST",
-                headers: { "Content Type": "application/json" },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
             const result = await response.json();
             if (!response.ok) {
-                throw new Error(result.message || "Failed to send rest Email");
+                throw new Error(result.message || "Failed to send reset Email");
             }
             setSuccess(true);
             setEmailSent(data.email);
@@ -66,7 +66,7 @@ export default function forgotPasswordForm() {
                     </div>
                     <CardTitle className="text-center">Check Your Email</CardTitle>
                     <CardDescription className="text-center">
-                        We've sent a password reset link to <strong>{emailsent}</strong>
+                        We've sent a password reset link to <strong>{emailSent}</strong>
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">

@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "../ui/alert";
 import { Input } from "../ui/input";
 import PasswordStrengthMeter from "./password-strength-meter";
 
-export default function resetPasswordForm(){
+export default function ResetPasswordForm(){
     const router=useRouter();
     const searchParams=useSearchParams();
     const token=searchParams.get("token");
@@ -40,7 +40,7 @@ export default function resetPasswordForm(){
         try {
             const response=await fetch("/api/auth/reset-password",{
                 method:"POST",
-                headers:{"Content Type":"application/json"},
+                headers:{"Content-Type":"application/json"},
                 body:JSON.stringify(data)
             })
             const result=await response.json();
@@ -55,7 +55,7 @@ export default function resetPasswordForm(){
             },2000)
 
         } catch (error) {
-            setError(error instanceof Error?error.message:"An errro occured")
+            setError(error instanceof Error?error.message:"An error occured")
         }finally{
             setIsLoading(false);
         }
@@ -88,7 +88,7 @@ export default function resetPasswordForm(){
                     </div>
                     <CardTitle className="text-center">Password Changed SuccessFully</CardTitle>
                     <CardDescription className="text-center">
-                        Your Password has been changed .Redirecting to login
+                        Your password has been changed . Redirecting to login...
                     </CardDescription>
                 </CardHeader>
             </Card>
@@ -117,7 +117,7 @@ export default function resetPasswordForm(){
                         <div>
                             <Input
                                 type={showPassword?"text":"password"}
-                                id={newPassword}
+                                id="newPassword"
                                 placeholder="••••••••"
                                 {...register("newPassword")}
                                 disabled={isLoading}
@@ -134,7 +134,7 @@ export default function resetPasswordForm(){
                         {errors.newPassword &&(
                             <p className="text-destructive text-sm">{errors.newPassword?.message}</p>
                         )}
-                        {newPassword && <PasswordStrengthMeter password="newPassword"/>}
+                        {newPassword && <PasswordStrengthMeter password={newPassword}/>}
                     </div>
                     <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading?(
