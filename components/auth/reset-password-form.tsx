@@ -114,7 +114,7 @@ export default function ResetPasswordForm(){
                         <label htmlFor="newPassword" className="text-sm font-medium">
                             New Password
                         </label>
-                        <div>
+                        <div className="relative">
                             <Input
                                 type={showPassword?"text":"password"}
                                 id="newPassword"

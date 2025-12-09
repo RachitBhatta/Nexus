@@ -20,7 +20,7 @@ export interface User extends Document{
     isMessageAccepted:boolean,
     message:Message[]
 
-    //Security Traking
+    //Security Tracking
     lastLogin?:Date,  
     accountLockedUntil?:Date,
     failedLoginAttempts:number
@@ -66,11 +66,15 @@ export const UserSchema: Schema<User> = new Schema(
     // Email verification
     VerifyOTP: {
       type: String,
-      required: [true, "Verify code is required"]
+      required: function():boolean {
+        return !this.googleId && !this.githubId;
+      }
     },
     OTPexpiry: {
       type: Date,
-      required: [true, "OTP expiry is required"]
+      required: function():boolean {
+        return !this.googleId && !this.githubId;
+      }
     },
     isVerified: {
       type: Boolean,

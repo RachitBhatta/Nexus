@@ -88,10 +88,12 @@ export function verifyRefreshToken(token: string): RefreshTokenPayload {
         if (error instanceof jwt.TokenExpiredError) {
             throw new Error("Refresh token has expired");
         }
+        if (error instanceof Error && error.message === "Invalid token type") {
+            throw error;
+        }
         throw new Error("Invalid refresh token");
     }
-}
-export function generateResetToken(email:string):string{
+}export function generateResetToken(email:string):string{
     try {
         const payload:ResetTokenPayload={
             email,
@@ -121,10 +123,12 @@ export function verifyResetToken(token:string):ResetTokenPayload{
         if (error instanceof jwt.TokenExpiredError) {
             throw new Error("Reset token has expired");
         }
-        throw new Error("Invalid or expired reset token");
+        if (error instanceof Error && error.message === "Invalid token type") {
+            throw error;
+        }
+        throw new Error("Invalid reset token");
     }
 }
-
 export function decodeToken(token:string):JWTPayload | null{
     try {
         const decoded=jwt.decode(token) as JWTPayload;

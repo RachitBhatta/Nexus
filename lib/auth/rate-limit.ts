@@ -23,32 +23,37 @@ function getKey(identifier:string,endpoint:string){
 
 export async function checkRateLimit(identifier:string,config:RatelimitConfig,endpoint:string)
 :Promise<{allowed:boolean,remaining:number,resetTime:number,blockedUntil?:number}>{
-    const key=getKey(identifier,endpoint)
-    const now=Date.now();
-    let entry=await redis.get<RatelimitEntry>(key);
-    if(entry?.blockedUntil && entry.blockedUntil > now){
-      return{
-        allowed:false,
-        remaining:0,
-        resetTime:entry.resetTime,
-        blockedUntil:entry.blockedUntil
+    try {
+      const key=getKey(identifier,endpoint)
+      const now=Date.now();
+      let entry=await redis.get<RatelimitEntry>(key);
+      if(entry?.blockedUntil && entry.blockedUntil > now){
+        return{
+          allowed:false,
+          remaining:0,
+          resetTime:entry.resetTime,
+          blockedUntil:entry.blockedUntil
+        }
       }
-    }
-    if(!entry || entry.resetTime <=now){
-      entry={attempts:0,resetTime:now+config.windowMS}
-    }
-    entry.attempts+=1
-    if(entry.attempts>config.maxLimits){
-      const blockedUntil=config.blockdurationMS?now+config.blockdurationMS:entry.resetTime;
-      entry.blockedUntil=blockedUntil;
+      if(!entry || entry.resetTime <=now){
+        entry={attempts:0,resetTime:now+config.windowMS}
+      }
+      entry.attempts+=1
+      if(entry.attempts>config.maxLimits){
+        const blockedUntil=config.blockdurationMS?now+config.blockdurationMS:entry.resetTime;
+        entry.blockedUntil=blockedUntil;
+        await redis.set(key,entry,{ex:Math.ceil(config.windowMS/1000)});
+        return { allowed: false, remaining: 0, resetTime: entry.resetTime, blockedUntil };
+      }
       await redis.set(key,entry,{ex:Math.ceil(config.windowMS/1000)});
-      return { allowed: false, remaining: 0, resetTime: entry.resetTime, blockedUntil };
-    }
-    await redis.set(key,entry,{ex:Math.ceil(config.windowMS/1000)});
-    return {
-      allowed:true,
-      remaining:config.maxLimits-entry.attempts,
-      resetTime:entry.resetTime,
+      return {
+        allowed:true,
+        remaining:config.maxLimits-entry.attempts,
+        resetTime:entry.resetTime,
+      }
+    } catch (error) {
+      console.error('Rate limit check failed:', error);
+      return { allowed: true, remaining: config.maxLimits, resetTime: Date.now() + config.windowMS };
     }
 }
 

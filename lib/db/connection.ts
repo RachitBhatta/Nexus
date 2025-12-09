@@ -20,7 +20,7 @@ const options:MongoClientOptions={
     //Compression reduces bandwidth costs
     compressors:['zlib','snappy'],
 
-    //Connection monitory checks if connection is working each 10 second
+    //Connection monitoring checks if connection is working each 10 second
     heartbeatFrequencyMS:10000,
 };
 /*

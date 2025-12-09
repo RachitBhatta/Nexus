@@ -9,7 +9,7 @@ export function sendSusLogin(
 ){
     return sendEmail({
         to,
-        subject:"There has been suspicious login in you account",
+        subject:"A suspicious login was detected on your account",
         react:(
             <SuspiciousLogin
                 username={username}

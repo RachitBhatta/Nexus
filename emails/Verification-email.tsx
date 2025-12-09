@@ -17,8 +17,7 @@ interface VerifyEmailProps {
   username: string;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "#";
-
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ;
 export default function VerifyEmail({ otp, username }: VerifyEmailProps) {
   return (
     <Html>

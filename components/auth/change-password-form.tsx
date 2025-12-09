@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { changePasswordSchema, type changePasswordInput } from "@/lib/db/Schemas/password-reset.schema";
@@ -17,6 +17,7 @@ export default function ChangePasswordForm() {
   const [success, setSuccess] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   const {
     register,
@@ -30,7 +31,13 @@ export default function ChangePasswordForm() {
   });
 
   const newPassword = watch("newPassword");
-
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [timeoutId]);
   const onSubmit = async (data: changePasswordInput) => {
     setIsLoading(true);
     setError("");
@@ -53,9 +60,11 @@ export default function ChangePasswordForm() {
       reset();
 
       // Hide success message after 5 seconds
-      setTimeout(() => {
+      const id = setTimeout(() => {
         setSuccess(false);
+        setTimeoutId(null);
       }, 5000);
+      setTimeoutId(id);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -131,6 +140,7 @@ export default function ChangePasswordForm() {
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={showNewPassword ? "Hide new password" : "Show new password"}
               >
                 {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>

@@ -29,21 +29,20 @@ export function LoginForm(){
         setIsLoading(true),
         setError("");
         try {
-            const response=fetch("/api/auth/login",{
+            const response=await fetch("/api/auth/login",{
                 method:"POST",
                 headers:{"Content-type":"application/json"},
                 body:JSON.stringify(data),
             });
-            const result=(await response).json();
+            const result=await response.json();
             if(result.require2FA ){
-                sessionStorage.setItem("2fa-identifier",data.identifier);
-                sessionStorage.setItem("2fa-password",data.password);
+                sessionStorage.setItem("2fa-token", result.token);
 
                 router.push("/2fa-verify");
                 return;
             }
             if(!response.ok){
-                throw new Error("Login Failed",result.message);
+                throw new Error(result.message || "Login failed");
             }
             router.push("/dashboard");
             router.refresh();
@@ -51,8 +50,9 @@ export function LoginForm(){
 
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred during login");
-        }finally{}
+        }finally{
             setIsLoading(false);
+        }
     }
     return(
         <Card className="w-full max-w-md mx-auto">

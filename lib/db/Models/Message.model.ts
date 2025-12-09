@@ -11,7 +11,6 @@ export const MessageSchema:Schema<Message>=new Schema({
     },
     createdAt:{
         type:Date,
-        required:true,
         default:Date.now,
     }
 })

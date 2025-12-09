@@ -1,5 +1,4 @@
 import mongoose,{Schema,Document} from "mongoose"
-import { userAgent } from "next/server"
 
 export interface Sessions extends Document{
     userId:mongoose.Types.ObjectId,
@@ -15,7 +14,8 @@ export interface Sessions extends Document{
     isActive:boolean,
     expiresAt:Date,
     lastAccessedAt:Date,
-    createdAt:Date
+    createdAt:Date,
+    updatedAt:Date
 }
 
 export const SessionSchema:Schema<Sessions>=new Schema(
@@ -81,7 +81,7 @@ SessionSchema.methods.deactivate=async function():Promise<void>{
     await this.save();
 }
 //Static Methods
-SessionSchema.statics.getAccessToken=async function(userId:string){
+SessionSchema.statics.getAccessToken=async function(userId:mongoose.Types.ObjectId): Promise<Sessions[]>{
     return this.find({
         userId,
         isActive:true,
@@ -89,7 +89,7 @@ SessionSchema.statics.getAccessToken=async function(userId:string){
     }).sort({lastAccessedAt:-1})
 };
 
-SessionSchema.statics.deactivateAllSessions=async function(userId:string){
+SessionSchema.statics.deactivateAllSessions=async function(userId:mongoose.Types.ObjectId){
     return this.updateMany(
         {userId,isActive:true},
         {$set:{isActive:false}}
@@ -102,6 +102,6 @@ SessionSchema.statics.deleteExpiredSessions=async function(){
     })
 }
 
-const SessionModel=mongoose.models.Sessions as mongoose.Model<Sessions>||mongoose.model<Sessions>("Session",SessionSchema);
+const SessionModel=mongoose.models.Session as mongoose.Model<Sessions>||mongoose.model<Sessions>("Session",SessionSchema);
 
 export default SessionModel;

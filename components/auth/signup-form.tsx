@@ -21,6 +21,7 @@ export default function SignUpForm(){
     const [showPassword,setShowPassword]=useState(false);
     const [success,setSuccess]=useState(false);
     const[suggestedPassword,setSuggestedPassword]=useState("")
+    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
     const {
     register,
     handleSubmit,
@@ -31,6 +32,11 @@ export default function SignUpForm(){
         mode: "onBlur",
     });
     const password=watch("password");
+    useEffect(() => {
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+        };
+    }, [timeoutId]);
     useEffect(()=>{
         if(!password){
             setSuggestedPassword(generateStrongPassword())
@@ -56,9 +62,11 @@ export default function SignUpForm(){
             }
             setSuccess(true);
 
-            setTimeout(()=>{
+            const id = setTimeout(()=>{
                 router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
             },2000)
+            setTimeoutId(id);
+
         } catch (error) {
             setError(error instanceof Error?error.message:"An error occurred during sign up process")
         }finally{
@@ -147,6 +155,7 @@ export default function SignUpForm(){
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>

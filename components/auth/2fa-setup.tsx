@@ -114,13 +114,14 @@ export default function TwoFASetup() {
                 throw new Error(result.message || "Invalid Verification Code");
             }
 
-            const codes = result.backupCodes || [];
+            const codes = result.backupCodes;
+            if (!codes || codes.length === 0) {
+                throw new Error("Backup codes were not returned. Please contact support.");
+            }
             setBackupCodes(codes);
-
-            // ✅ FIX 1: Save backup codes to sessionStorage
             sessionStorage.setItem(BACKUP_CODES_SESSION_KEY, JSON.stringify(codes));
-
             setStep("complete");
+
         } catch (error) {
             setError(error instanceof Error ? error.message : "Verification Failed");
         } finally {
@@ -153,6 +154,12 @@ export default function TwoFASetup() {
     };
 
     const handleDone = () => {
+        if (!codesDownloaded) {
+        const confirmLeave = confirm(
+            "You haven't downloaded your backup codes. If you lose access to your authenticator, you won't be able to recover your account. Continue anyway?"
+        );
+        if (!confirmLeave) return;
+    }
         // ✅ Clear backup codes from sessionStorage
         sessionStorage.removeItem(BACKUP_CODES_SESSION_KEY);
         // ✅ FIX 5: Use Next.js router instead of window.location

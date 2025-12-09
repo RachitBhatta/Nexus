@@ -1,4 +1,4 @@
-import z from "zod";
+import {z} from "zod";
 
 export const SignInSchema=z.object({
     identifier:z
@@ -7,12 +7,15 @@ export const SignInSchema=z.object({
                 .transform((val)=>val.trim().toLowerCase()),
     password:z
                 .string()
-                .min(1,"Password is required")
+                .min(8,"Password must be at least 8 characters")
                 
 })
 
 export const twoFASchema=z.object({
-    identifier:z.string().min(1, "Email or Username is required"),
+    identifier:z
+                .string()
+                .min(1, "Email or Username is required")
+                .transform((val)=>val.trim().toLowerCase()),
     password:z.string().min(1, "Password is required"),
     twoFACode:z
             .string()

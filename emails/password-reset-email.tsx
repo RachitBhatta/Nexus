@@ -12,7 +12,7 @@ export default function PasswordResetEmail({username,resetPasswordLink}:Password
             <Preview>Password-Reset-Email from Nexus.</Preview>
             <Body  className="font-sans" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
                 <Tailwind>
-                    <Container className="shadow-md mx-auto bg-white w-[480px] rounded-xl p-6 ">
+                    <Container className="shadow-md mx-auto bg-white" style={{ maxWidth: "480px", width: "100%" }}>
                         <Section className="flex justify-center my-3 py-3 ">
                             <Img
                                 src="https://i.imgur.com/fbQdA6z.png"
@@ -41,7 +41,8 @@ export default function PasswordResetEmail({username,resetPasswordLink}:Password
                             </Section>
                             <Text className="leading-xl text-base py-4 ">
                                 If you don&apos;t want to change your password or didn&apos;t
-                                request this, just ignore and delete this message.
+                                request this, just ignore and delete this message. If you believe
+                                this is suspicious activity, please contact our support team immediately.
                             </Text>
                             <Hr className="bg-gray-700 my-6"/>
                             <Text>

@@ -30,6 +30,7 @@ export default function ForgotPasswordForm() {
         register,
         handleSubmit,
         formState: { errors },
+        reset
     } = useForm({
         resolver: zodResolver(forgotPasswordSchema),
         mode: "onBlur",
@@ -47,7 +48,7 @@ export default function ForgotPasswordForm() {
             });
             const result = await response.json();
             if (!response.ok) {
-                throw new Error(result.message || "Failed to send reset Email");
+                throw new Error(result.message || "Failed to send reset email");
             }
             setSuccess(true);
             setEmailSent(data.email);
@@ -84,6 +85,7 @@ export default function ForgotPasswordForm() {
                             onClick={() => {
                                 setSuccess(false);
                                 setEmailSent("");
+                                reset();
                             }}
                         >
                             Try another email address

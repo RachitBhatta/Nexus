@@ -17,8 +17,9 @@ export default function twoFAVerify({identifier,password}:twoFAVerifyProps){
     const [error,setError]=useState<string>("");
     const [twoFACode,setTwoFACode]=useState("");
     const [useBackupCode,setUseBackupCode]=useState(false);
+    const requiredLength=useBackupCode?8:6;
     const handleVerify=async()=>{
-        const requiredLength=useBackupCode?8:6;
+        
         if(twoFACode.length<requiredLength){
             setError(useBackupCode?"Please enter a backup code":"Please enter a 6-digit code")
             return;
@@ -91,7 +92,7 @@ export default function twoFAVerify({identifier,password}:twoFAVerifyProps){
                     <div>
                         <Button
                             onClick={handleVerify}
-                            disabled={isLoading || twoFACode.length<6}
+                            disabled={isLoading || twoFACode.length<requiredLength}
                             className="w-full"
                         >
                             {

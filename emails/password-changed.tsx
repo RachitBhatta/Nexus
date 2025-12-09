@@ -17,7 +17,9 @@ interface PasswordChangedProps {
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
+if (!BASE_URL) {
+  console.warn("NEXT_PUBLIC_BASE_URL is not set. Using fallback URL.");
+}
 export default function PasswordChanged({ username }: PasswordChangedProps) {
   return (
     <Html>

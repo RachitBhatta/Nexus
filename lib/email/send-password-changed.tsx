@@ -7,7 +7,7 @@ export function sendPasswordChanged(
 ){
     return sendEmail({
         to,
-        subject:"You password has been changed",
+        subject:"Your password has been changed",
         react:(
             <PasswordChanged 
             username={username}

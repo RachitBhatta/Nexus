@@ -1,5 +1,5 @@
 import { sendEmail } from "../resend";
-import SubscriptionUpgrade from "@/emails/subscribtion-email";
+import SubscriptionUpgrade from "@/emails/subscription-email";
 
 export function sendSubscribtion(
     to:string,
@@ -9,7 +9,7 @@ export function sendSubscribtion(
 ){
     return sendEmail({
         to,
-        subject:"Thank you for purchasing the subscribtion",
+        subject:"Thank you for purchasing the subscription",
         react:(
             <SubscriptionUpgrade
                 username={username}

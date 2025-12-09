@@ -2,8 +2,8 @@ import {z} from "zod";
 
 export const UsernameValidation=z
                                 .string()
-                                .min(8,"Username must be greater than 8 character")
-                                .max(25,"Username must be no more than 25 character")
+                                .min(8,"Username must be at least 8 characters")
+                                .max(25,"Username must be no more than 25 characters")
                                 .regex(/^[a-zA-Z0-9_]+$/,"Username must not contain any special character")
                                 .refine((val)=>!val.includes(".."),
                                 "Username cannot have consecutive dots"
@@ -12,9 +12,9 @@ export const SignUpSchema=z.object({
     username:UsernameValidation,
     email:z
         .string()
+        .trim()
         .email({message:"Invalid Email Address"})
-        .toLowerCase()
-        .transform((val)=>val.trim()),
+        .toLowerCase(),
     password:z
         .string()
         .min(8,"Password must be at least 8 character")
