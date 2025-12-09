@@ -104,7 +104,7 @@ export default function ChangePasswordForm() {
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                aria-label={showCurrentPassword ? "Hide current password" : "Show current password"}
+                aria-label={showCurrentPassword ? "Hide new password" : "Show new password"}
               >
                 {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
