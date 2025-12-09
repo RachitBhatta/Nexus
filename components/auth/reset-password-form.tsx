@@ -55,7 +55,7 @@ export default function ResetPasswordForm(){
             },2000)
 
         } catch (error) {
-            setError(error instanceof Error?error.message:"An error occured")
+            setError(error instanceof Error?error.message:"An error occurred")
         }finally{
             setIsLoading(false);
         }
@@ -88,7 +88,7 @@ export default function ResetPasswordForm(){
                     </div>
                     <CardTitle className="text-center">Password Changed SuccessFully</CardTitle>
                     <CardDescription className="text-center">
-                        Your password has been changed . Redirecting to login...
+                        Your password has been changed. Redirecting to login...
                     </CardDescription>
                 </CardHeader>
             </Card>

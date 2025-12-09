@@ -1,14 +1,17 @@
 "use client";
 
-import { twoFAInput } from "@/lib/db/Schemas/SignIn.schema";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Alert, AlertDescription } from "../ui/alert";
-import { AlertCircle, Check, CheckCircle2, Copy, Loader2 } from "lucide-react";
+import { AlertCircle, Check, CheckCircle2, Copy, Loader2, AlertTriangle } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
+const BACKUP_CODES_SESSION_KEY = "nexus_2fa_backup_codes";
+
 export default function TwoFASetup() {
+    const router = useRouter();
     const [qrCode, setQrCode] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string>("");
@@ -17,35 +20,83 @@ export default function TwoFASetup() {
     const [verificationCode, setVerificationCode] = useState<string>("");
     const [step, setStep] = useState<"setup" | "verify" | "complete">("setup");
     const [copiedCode, setCopiedCode] = useState<string>("");
+    const [codesDownloaded, setCodesDownloaded] = useState(false);
+    const [initialSetupData, setInitialSetupData] = useState<{
+        qrCode: string;
+        secret: string;
+    } | null>(null);
 
+    // ✅ FIX 1: Restore backup codes from sessionStorage on mount
     useEffect(() => {
-        if (step === "setup") {
-            initialize2FASetup();
+        const savedCodes = sessionStorage.getItem(BACKUP_CODES_SESSION_KEY);
+        if (savedCodes) {
+            try {
+                const codes = JSON.parse(savedCodes);
+                setBackupCodes(codes);
+                setStep("complete");
+            } catch (err) {
+                console.error("Failed to restore backup codes:", err);
+            }
         }
-    }, [step]);
+    }, []);
+
+    // ✅ FIX 2: Warn before page unload if backup codes not downloaded
+    useEffect(() => {
+        if (step === "complete" && backupCodes.length > 0 && !codesDownloaded) {
+            const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+                e.preventDefault();
+                e.returnValue = "You haven't downloaded your backup codes yet. Are you sure you want to leave?";
+                return e.returnValue;
+            };
+
+            window.addEventListener("beforeunload", handleBeforeUnload);
+            return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+        }
+    }, [step, backupCodes, codesDownloaded]);
+
+    // ✅ FIX 3: Initialize setup ONCE and preserve data
+    useEffect(() => {
+        if (step === "setup" && !initialSetupData) {
+            initialize2FASetup();
+        } else if (step === "setup" && initialSetupData) {
+            // Restore previous setup data when going back
+            setQrCode(initialSetupData.qrCode);
+            setSecret(initialSetupData.secret);
+        }
+    }, [step, initialSetupData]);
+
     const initialize2FASetup = async () => {
         setIsLoading(true);
         setError("");
         try {
             const response = await fetch("/api/auth/2fa/setup", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" }
+                headers: { "Content-Type": "application/json" },
+                credentials: "include", // ✅ FIX 4: Include cookies
             });
             const result = await response.json();
             if (!response.ok) {
                 throw new Error(result.message || "Failed to setup two factor authentication");
             }
+
+            // ✅ FIX 3: Store initial setup data
+            const setupData = {
+                qrCode: result.qrCode,
+                secret: result.secret,
+            };
+            setInitialSetupData(setupData);
             setQrCode(result.qrCode);
-            setSecret(result.secret)
+            setSecret(result.secret);
         } catch (error) {
-            setError(error instanceof Error ? error.message : "An error occurred")
+            setError(error instanceof Error ? error.message : "An error occurred");
         } finally {
             setIsLoading(false);
         }
-    }
+    };
+
     const verify2FA = async () => {
         if (verificationCode.length !== 6) {
-            setError("Please enter 6-digit code")
+            setError("Please enter 6-digit code");
             return;
         }
         setIsLoading(true);
@@ -55,21 +106,27 @@ export default function TwoFASetup() {
             const response = await fetch("/api/auth/2fa/verify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ twoFACode: verificationCode })
+                credentials: "include", // ✅ FIX 4: Include cookies
+                body: JSON.stringify({ twoFACode: verificationCode }),
             });
             const result = await response.json();
             if (!response.ok) {
-                throw new Error(result.message || "Invalid Verification Code")
+                throw new Error(result.message || "Invalid Verification Code");
             }
-            setBackupCodes(result.backupCodes || []);
+
+            const codes = result.backupCodes || [];
+            setBackupCodes(codes);
+
+            // ✅ FIX 1: Save backup codes to sessionStorage
+            sessionStorage.setItem(BACKUP_CODES_SESSION_KEY, JSON.stringify(codes));
+
             setStep("complete");
         } catch (error) {
-            setError(error instanceof Error ? error.message : "Verification Failed")
+            setError(error instanceof Error ? error.message : "Verification Failed");
         } finally {
             setIsLoading(false);
         }
-
-    }
+    };
 
     const copyToClipboard = async (text: string, id: string) => {
         try {
@@ -77,35 +134,52 @@ export default function TwoFASetup() {
             setCopiedCode(id);
             setTimeout(() => setCopiedCode(""), 2000);
         } catch (error) {
-            console.log("Failed to copy", error)
+            console.log("Failed to copy", error);
         }
-    }
+    };
 
     const downloadBackupCodes = () => {
-        //Join the code in a string
         const content = backupCodes.join("\n");
-        // make a txt file of backup codes
         const blob = new Blob([content], { type: "text/plain" });
-        // creates a temporary url in website to downlaod the file
         const url = URL.createObjectURL(blob);
-        //Automatically download the files
         const a = document.createElement("a");
         a.href = url;
         a.download = "Nexus-2fa-backup-codes.txt";
         a.click();
-        //removes the temporary url
         URL.revokeObjectURL(url);
-    }
 
+        // ✅ Mark as downloaded
+        setCodesDownloaded(true);
+    };
+
+    const handleDone = () => {
+        // ✅ Clear backup codes from sessionStorage
+        sessionStorage.removeItem(BACKUP_CODES_SESSION_KEY);
+        // ✅ FIX 5: Use Next.js router instead of window.location
+        router.push("/settings/security");
+    };
+
+    // ✅ FIX 3: Show warning when going back
+    const handleBackToSetup = () => {
+        const confirmBack = confirm(
+            "Going back will generate a NEW QR code. If you already scanned the previous code, you'll need to scan the new one. Continue?"
+        );
+        if (confirmBack) {
+            // Reset to generate new setup
+            setInitialSetupData(null);
+            setQrCode("");
+            setSecret("");
+            setVerificationCode("");
+            setStep("setup");
+        }
+    };
 
     if (step === "setup") {
         return (
             <Card className="w-full max-w-md mx-auto">
                 <CardHeader>
                     <CardTitle>Enable Two-Factor Authentication</CardTitle>
-                    <CardDescription>
-                        Scan the QR code with your authenticator app
-                    </CardDescription>
+                    <CardDescription>Scan the QR code with your authenticator app</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {error && (
@@ -185,13 +259,14 @@ export default function TwoFASetup() {
                             onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
                             className="text-center text-2xl tracking-widest"
                             disabled={isLoading}
+                            autoFocus
                         />
                     </div>
 
                     <div className="flex gap-2">
                         <Button
                             variant="outline"
-                            onClick={() => setStep("setup")}
+                            onClick={handleBackToSetup}
                             disabled={isLoading}
                             className="flex-1"
                         >
@@ -229,6 +304,17 @@ export default function TwoFASetup() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+                {/* ✅ Warning if not downloaded */}
+                {!codesDownloaded && (
+                    <Alert>
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertDescription>
+                            <strong>Important:</strong> Download your backup codes now. You won't be able to see
+                            them again!
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                 <Alert>
                     <AlertDescription>
                         Use these codes if you lose access to your authenticator app. Each code can only be
@@ -259,14 +345,13 @@ export default function TwoFASetup() {
                 </div>
 
                 <Button onClick={downloadBackupCodes} variant="outline" className="w-full">
-                    Download Backup Codes
+                    {codesDownloaded ? "✓ Downloaded" : "Download Backup Codes"}
                 </Button>
 
-                <Button onClick={() => window.location.href = "/settings/security"} className="w-full">
+                <Button onClick={handleDone} className="w-full">
                     Done
                 </Button>
             </CardContent>
         </Card>
     );
 }
-
