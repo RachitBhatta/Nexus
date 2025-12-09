@@ -142,11 +142,7 @@ export default function SignUpForm(){
                         disabled={isLoading}
                         aria-invalid={!!errors.password}
                     />
-                    {!password && suggestedPassword && (
-                        <p className="text-sm text-muted-foreground">
-                            Suggested Password:<code>{suggestedPassword}</code>
-                        </p>
-                    )}
+                    
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
@@ -154,6 +150,11 @@ export default function SignUpForm(){
                     >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
+                    {!password && suggestedPassword && (
+                        <p className="text-sm text-muted-foreground">
+                            Suggested Password:<code>{suggestedPassword}</code>
+                        </p>
+                    )}
 
                     </div>
                     {errors.password && (
