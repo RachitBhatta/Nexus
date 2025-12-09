@@ -86,7 +86,7 @@ export default function ResetPasswordForm(){
                     <div className="flex justify-center mb-4">
                         <CheckCircle2 className="h-16 w-16 text-green-500"/>
                     </div>
-                    <CardTitle className="text-center">Password Changed SuccessFully</CardTitle>
+                    <CardTitle className="text-center">Password Changed Successfully</CardTitle>
                     <CardDescription className="text-center">
                         Your password has been changed. Redirecting to login...
                     </CardDescription>

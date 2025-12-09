@@ -18,7 +18,8 @@ export default function twoFAVerify({identifier,password}:twoFAVerifyProps){
     const [twoFACode,setTwoFACode]=useState("");
     const [useBackupCode,setUseBackupCode]=useState(false);
     const handleVerify=async()=>{
-        if(twoFACode.length<6){
+        const requiredLength=useBackupCode?8:6;
+        if(twoFACode.length<requiredLength){
             setError(useBackupCode?"Please enter a backup code":"Please enter a 6-digit code")
             return;
         }
@@ -81,7 +82,7 @@ export default function twoFAVerify({identifier,password}:twoFAVerifyProps){
                             setTwoFACode(
                                 useBackupCode
                                 ?e.target.value.toUpperCase()
-                                :e.target.value.replace(/D/g,"")
+                                :e.target.value.replace(/\D/g,"")
                             )
                         }}
                         className="text-center text-2xl tracking-widest"
