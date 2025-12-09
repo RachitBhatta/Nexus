@@ -10,7 +10,13 @@ export function generateStrongPassword(): string {
   const getRandomIndex = (max: number): number => {
     const randomBuffer = new Uint32Array(1);
     crypto.getRandomValues(randomBuffer);
-    return randomBuffer[0] % max;
+    const range = Math.floor(0xFFFFFFFF / max) * max;
+    let random;
+    do {
+      crypto.getRandomValues(randomBuffer);
+      random = randomBuffer[0];
+    } while (random >= range);
+    return random % max;
   };
   
   password += lowercase[getRandomIndex(lowercase.length)];
@@ -33,7 +39,7 @@ export function generateStrongPassword(): string {
   for (let i = chars.length - 1; i > 0; i--) {
     const randomBuffer = new Uint32Array(1);
     crypto.getRandomValues(randomBuffer);
-    const j = randomBuffer[0] % (i + 1);
+    const j = getRandomIndex(i + 1);
     [chars[i], chars[j]] = [chars[j], chars[i]];
   }
   return chars.join("");
