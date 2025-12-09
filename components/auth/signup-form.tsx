@@ -2,7 +2,7 @@
 import { SignUpInput } from "@/lib/db/Schemas/SignUp.schema";
 import { SignUpSchema } from "@/lib/db/Schemas/SignUp.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
@@ -13,12 +13,14 @@ import { Button } from "../ui/button";
 import OAuthButton from "./oauth-button";
 import Link from "next/link";
 import PasswordStrengthMeter from "./password-strength-meter";
+import { generateStrongPassword } from "./strong-password-suggestion";
 export default function SignUpForm(){
     const router=useRouter()
     const [isLoading,setIsLoading]=useState(false);
     const [error,setError]=useState<string>("");
     const [showPassword,setShowPassword]=useState(false);
     const [success,setSuccess]=useState(false);
+    const[suggestedPassword,setSuggestedPassword]=useState("")
     const {
     register,
     handleSubmit,
@@ -28,6 +30,13 @@ export default function SignUpForm(){
         resolver: zodResolver(SignUpSchema),
         mode: "onBlur",
     });
+    useEffect(()=>{
+        if(!password || password.length<8){
+            setSuggestedPassword(generateStrongPassword())
+        }else{
+            setSuggestedPassword("");
+        }
+    })
     const password=watch("password");
     const onSubmit=async(data:SignUpInput)=>{
         setIsLoading(true);
@@ -132,6 +141,11 @@ export default function SignUpForm(){
                         disabled={isLoading}
                         aria-invalid={!!errors.password}
                     />
+                    {!password && suggestedPassword && (
+                        <p className="text-sm text-muted-foreground">
+                            Suggested Password:<code>{suggestedPassword}</code>
+                        </p>
+                    )}
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
@@ -139,6 +153,7 @@ export default function SignUpForm(){
                     >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
+
                     </div>
                     {errors.password && (
                     <p className="text-sm text-destructive">{errors.password.message}</p>
