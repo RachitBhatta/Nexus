@@ -30,14 +30,15 @@ export default function SignUpForm(){
         resolver: zodResolver(SignUpSchema),
         mode: "onBlur",
     });
+    const password=watch("password");
     useEffect(()=>{
-        if(!password || password.length<8){
+        if(!password){
             setSuggestedPassword(generateStrongPassword())
         }else{
             setSuggestedPassword("");
         }
-    })
-    const password=watch("password");
+    },[password])
+    
     const onSubmit=async(data:SignUpInput)=>{
         setIsLoading(true);
         setSuccess(false);
