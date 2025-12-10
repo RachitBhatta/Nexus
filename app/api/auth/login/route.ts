@@ -52,22 +52,22 @@ export async function POST(req:NextRequest){
             )
         }
         if(user.isAccountLocked()){
+            const lockUntil = user.accountLockedUntil?.getTime() ?? Date.now();
             const timeRemaining=Math.ceil(
-                (user.accountLockedUntil!.getTime()-Date.now())/60000
+                (lockUntil - Date.now()) / 60000
             )
             return NextResponse.json(
                 {
                     success:false,
-                    message:`Account Locked.Try again in ${timeRemaining} in minutes`
+                    message:`Account locked. Try again in ${timeRemaining} minutes`
                 },{
                     status:423
                 }
             )
         }
+        const isPasswordValid = await verifyPassword(password, user.password);
 
-        const isPasswordVaild=verifyPassword(password,user.password);
-
-        if(!isPasswordVaild){
+        if(!isPasswordValid){
             await user.failedLoginAttempts();
             return NextResponse.json(
                 {
@@ -77,8 +77,7 @@ export async function POST(req:NextRequest){
                     status:401
                 }
             )
-        }
-        if(!user.isVerified){
+        }        if(!user.isVerified){
             return NextResponse.json(
                 {
                     success:false,
@@ -107,14 +106,14 @@ export async function POST(req:NextRequest){
             const device=userAgent.includes("Mobile")?"Mobile":"Desktop";
             const location=req.headers.get("cf-ipcountry") || "Unknown location";
 
-            sendTwoFACode(
+            await sendTwoFACode(
                 user.username,
                 twoFACode,
                 device,
                 location,
                 5,
                 user.email
-            )
+            );
             return NextResponse.json(
                 {
                     success:true,
