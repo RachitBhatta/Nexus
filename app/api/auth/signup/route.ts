@@ -60,7 +60,7 @@ export async function POST(req:NextRequest){
             );           
         }
 
-        const hashedPassword=hashPassword(validateData.password);
+        const hashedPassword=await hashPassword(validateData.password);
 
         const otp=await generateOTP(6);
         const otpExpiry=new Date(Date.now()+10*60*1000);
@@ -77,8 +77,17 @@ export async function POST(req:NextRequest){
 
         await newUser.save();
 
-        await sendVerifyEmail(validateData.email,otp,validateData.username);
-
+        try {
+            await sendVerifyEmail(validateData.email, otp, validateData.username);
+        } catch (emailError) {
+            console.error("Failed to send verification email:", emailError);
+            
+            await UserModel.findByIdAndDelete(newUser._id);
+            return NextResponse.json({
+                success: false,
+                message: "Failed to send verification email. Please try again."
+            }, { status: 500 });
+        }
         return  NextResponse.json(
             {
                 success:true,
@@ -108,7 +117,7 @@ export async function POST(req:NextRequest){
             )
 
         }
-        if(error.name===11000){
+        if(error.code===11000){
             return NextResponse.json(
                 {
                     success:false,
