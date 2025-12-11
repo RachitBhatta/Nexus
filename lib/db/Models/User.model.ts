@@ -33,7 +33,11 @@ export interface User extends Document{
     githubId?:string
 
     createdAt:Date,
-    updatedAt:Date
+    updatedAt:Date,
+
+    isAccountLocked(): boolean;
+    incrementFailedLoginAttempts(): Promise<void>;
+    resetLoginAttempts(): Promise<void>;
 }
 
 
@@ -152,7 +156,7 @@ UserSchema.index({resetPasswordToken:1})
     return !!(this.accountLockedUntil && this.accountLockedUntil>new Date());
 }
 //Locking the account for 30 min
-UserSchema.methods.failedLoginAttempt=async function():Promise<void>{
+UserSchema.methods.incrementFailedLoginAttempts=async function():Promise<void>{
     this.failedLoginAttempts+=1;
 
     if(this.failedLoginAttempts>=5){

@@ -67,7 +67,7 @@ export async function POST(req:NextRequest){
         const isPasswordValid = await verifyPassword(password, user.password);
 
         if(!isPasswordValid){
-            await user.failedLoginAttempts();
+            await user.incrementFailedLoginAttempts();
             return NextResponse.json(
                 {
                     success:false,
@@ -143,7 +143,7 @@ export async function POST(req:NextRequest){
             httpOnly:true,
             sameSite:"lax",
             secure:process.env.NODE_ENV==="production",
-            maxAge:7*24*60*60,
+            maxAge:60*60,
             path:"/"
         })
         cookie.set("refreshToken",refreshToken,{

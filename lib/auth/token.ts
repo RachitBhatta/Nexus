@@ -18,7 +18,7 @@ export interface ResetTokenPayload {
 }
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"] || "7d";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"] || "1h";
 const REFRESH_TOKEN_EXPIRES_IN = "30d";
 const RESET_TOKEN_EXPIRES_IN = "1h";
 
