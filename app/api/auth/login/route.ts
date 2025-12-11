@@ -7,7 +7,6 @@ import { SignInSchema } from "@/lib/db/Schemas/SignIn.schema";
 import { sendTwoFACode } from "@/lib/email/send-2fa-code";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { success } from "zod";
 
 
 export async function POST(req:NextRequest){
@@ -39,7 +38,7 @@ export async function POST(req:NextRequest){
                 {email:identifier},
                 {username:identifier}
             ]
-        })
+        });
         if(!user){
             return NextResponse.json(
                 {
