@@ -7,8 +7,8 @@ export interface User extends Document{
     email:string,
 
     //Email verification
-    VerifyOTP:string,
-    OTPexpiry:Date,
+    VerifyOTP?:string,
+    OTPexpiry?:Date,
     isVerified:boolean,
 
     //2FA
@@ -70,13 +70,13 @@ export const UserSchema: Schema<User> = new Schema(
     
     // Email verification
     VerifyOTP: {
-      type: String,
+      type: String ,
       required: function():boolean {
         return !this.googleId && !this.githubId;
       }
     },
     OTPexpiry: {
-      type: Date,
+      type: Date ,
       required: function():boolean {
         return !this.googleId && !this.githubId;
       }
