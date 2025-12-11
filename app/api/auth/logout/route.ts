@@ -73,11 +73,21 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
     const cookieStore = await cookies();
-    const hasAccessToken = cookieStore.has("accessToken");
+    const accessToken= cookieStore.get("accessToken")?.value;
+    let loggedIn=false;
+
+    if(accessToken){
+        try {
+            verifyToken(accessToken);
+            loggedIn=true
+        } catch (error) {
+            loggedIn=false
+        }
+    }
 
     return NextResponse.json(
         {
-            loggedIn: hasAccessToken
+            loggedIn
         },
         { status: 200 }
     );
