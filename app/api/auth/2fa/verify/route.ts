@@ -39,16 +39,7 @@ export async function POST(req: NextRequest) {
             );
         };
 
-        if (!twoFACode || twoFACode !== 6) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Invalid Code Format"
-                }, {
-                status: 400
-            }
-            )
-        };
+        
         await connectDB();
 
         const user = await UserModel.findById(decodedToken.userId);
@@ -57,7 +48,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Two Factor Authentication setpu is not intialized"
+                    message: "Two Factor Authentication setup is not intialized"
                 }, {
                 status: 401
             }
