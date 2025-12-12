@@ -20,7 +20,7 @@ export async function POST(req:NextRequest){
                     success:false,
                     message:"Unauthorized. Please Login"
                 },{
-                    status:400
+                    status:401
                 }
             )
         };
@@ -79,7 +79,7 @@ export async function POST(req:NextRequest){
                 }
             )
         }
-        const isCurrentPasswordValid=verifyPassword(currentPassword,user.password);
+        const isCurrentPasswordValid=await verifyPassword(currentPassword,user.password);
 
         if(!isCurrentPasswordValid){
             return NextResponse.json(
@@ -97,6 +97,8 @@ export async function POST(req:NextRequest){
                 {
                     success:false,
                     message:"New password must be different from current password"
+                },{
+                    status:400
                 }
             )
         };
