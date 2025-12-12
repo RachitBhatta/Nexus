@@ -62,8 +62,8 @@ export async function POST(req:NextRequest){
             )
         };
 
-        const secret=await speakeasy.generateSecret({
-            name:`Nexusu ${user.email}`,
+        const secret=speakeasy.generateSecret({
+            name:`Nexus ${user.email}`,
             issuer:"Nexus"
         });
 
@@ -90,7 +90,7 @@ export async function POST(req:NextRequest){
         return NextResponse.json(
             {
                 success:false,
-                message:"Failed to stepup 2FA"
+                message:"Failed to setup 2FA"
             },{
                 status:500
             }
