@@ -30,7 +30,20 @@ export async function POST(req: NextRequest) {
         }
 
 
-        const { password } = await req.json();
+        let password;
+        try {
+            const body=await req.json();
+            password=body.password;
+        } catch (error) {
+            return NextResponse.json(
+                {
+                    success:false,
+                    message:"Invalid request format"
+                },{
+                    status:400
+                }
+            )
+        }
 
         if (!password) {
             return NextResponse.json(

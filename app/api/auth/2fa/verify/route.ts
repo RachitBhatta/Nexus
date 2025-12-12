@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Two Factor Authentication setup is not intialized"
+                    message: "Two Factor Authentication setup is not initialized"
                 }, {
                 status: 401
             }
