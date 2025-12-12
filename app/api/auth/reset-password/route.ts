@@ -28,9 +28,16 @@ export async function POST(req:NextRequest){
                 }
             )
         };
-        const body=await req.json();
-        const {token,newPassword}=resetPasswordSchema.parse(body);
-
+        let body;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json(
+                { success: false, message: "Invalid request body" },
+                { status: 400 }
+            );
+        }
+        const { token, newPassword } = resetPasswordSchema.parse(body);
         let decodedToken;
         try {
             decodedToken=verifyResetToken(token)
