@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
         if (user.isVerified) {
             return NextResponse.json(
                 {
-                    success: false,
+                    success: true,
                     message: "This email is already verified. Please login."
                 },
                 { status: 400 }
