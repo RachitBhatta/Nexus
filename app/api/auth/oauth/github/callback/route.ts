@@ -11,7 +11,23 @@ export async function GET(req: NextRequest) {
     try {
         const searchParams = req.nextUrl.searchParams;
         const code = searchParams.get("code");
-        const error = searchParams.get("error");
+        const error = searchParams.get("error");const state = searchParams.get("state");
+
+        
+        const cookieStore = await cookies();
+        const savedState = cookieStore.get("oauth_state")?.value;
+        
+        if (!state || state !== savedState) {
+            return NextResponse.redirect(
+                new URL("/login?error=invalid_state", req.url)
+            );
+        }
+        
+        cookieStore.delete("oauth_state");
+
+
+
+
 
         if (error) {
             return NextResponse.redirect(
@@ -134,7 +150,6 @@ export async function GET(req: NextRequest) {
         await user.save();
 
 
-        const cookieStore = await cookies();
 
         cookieStore.set("accessToken", accessToken, {
             httpOnly: true,

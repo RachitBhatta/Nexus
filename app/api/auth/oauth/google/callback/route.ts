@@ -11,6 +11,19 @@ export async function GET(req: NextRequest) {
         const searchParams = req.nextUrl.searchParams;
         const error = searchParams.get("error");
         const code = searchParams.get("code");
+        const state = searchParams.get("state");
+
+        const cookieStore = await cookies();
+        const storedState = cookieStore.get("oauth_state")?.value;
+        if (!state || state !== storedState) {
+            return NextResponse.redirect(
+                new URL("/login?error=invalid_state", req.url)
+            );
+        }
+        cookieStore.delete("oauth_state");
+
+
+
 
         if (error) {
             return NextResponse.redirect(
@@ -23,7 +36,7 @@ export async function GET(req: NextRequest) {
             )
         }
 
-        const tokenResponse = await fetch("https://2oauth.googleapis.com/token", {
+        const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({
@@ -31,7 +44,7 @@ export async function GET(req: NextRequest) {
                 client_id: process.env.GOOGLE_CLIENT_ID!,
                 client_secret: process.env.GOOGLE_CLIENT_SECRET!,
                 redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/oauth/google/callback`,
-                grant_type: "authorization-code"
+                grant_type: "authorization_code"
             })
         });
 
@@ -57,6 +70,9 @@ export async function GET(req: NextRequest) {
         });
 
         if (!user) {
+            if (!googleUser.verified_email) {
+                throw new Error("Google email not verified");
+            }
             const existingEmailUser = await UserModel.findOne({
                 email: googleUser.email
             });
@@ -75,7 +91,9 @@ export async function GET(req: NextRequest) {
                 });
                 await user.save();
 
-                await sendWelcome(user.email, user.username);
+                sendWelcome(user.email, user.username).catch((err) =>
+                    console.error("Failed to send welcome email:", err)
+                );
             }
 
         }
@@ -94,7 +112,6 @@ export async function GET(req: NextRequest) {
         user.lastLogin = new Date();
         await user.save();
 
-        const cookieStore = await cookies();
 
         cookieStore.set("accessToken", accessToken, {
             httpOnly: true,
@@ -114,7 +131,7 @@ export async function GET(req: NextRequest) {
 
 
     } catch (error) {
-        console.error(" Google OAuth Error:", error);
+        console.error("Google OAuth Error:", error);
 
         return NextResponse.redirect(
             new URL("/login?error=oauth_failed", req.url)
