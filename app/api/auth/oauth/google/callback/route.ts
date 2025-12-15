@@ -1,29 +1,40 @@
-import { NextRequest, NextResponse } from "next/server";
+import { generateAccessToken, generateRefreshToken } from "@/lib/auth/token";
 import { connectDB } from "@/lib/db/connection";
 import UserModel from "@/lib/db/Models/User.model";
-import { generateAccessToken, generateRefreshToken } from "@/lib/auth/token";
 import { sendWelcome } from "@/lib/email/send-welcome";
 import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+
 
 export async function GET(req: NextRequest) {
     try {
         const searchParams = req.nextUrl.searchParams;
-        const code = searchParams.get("code");
         const error = searchParams.get("error");
+        const code = searchParams.get("code");
+        const state = searchParams.get("state");
+
+        const cookieStore = await cookies();
+        const storedState = cookieStore.get("oauth_state")?.value;
+        if (!state || state !== storedState) {
+            return NextResponse.redirect(
+                new URL("/login?error=invalid_state", req.url)
+            );
+        }
+        cookieStore.delete("oauth_state");
+
+
 
 
         if (error) {
             return NextResponse.redirect(
                 new URL(`/login?error=${encodeURIComponent(error)}`, req.url)
-            );
+            )
         }
-
         if (!code) {
             return NextResponse.redirect(
-                new URL("/login?error=missing_code", req.url)
-            );
+                new URL(`login?error=missing_code`, req.url)
+            )
         }
-
 
         const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
             method: "POST",
@@ -38,44 +49,39 @@ export async function GET(req: NextRequest) {
         });
 
         if (!tokenResponse.ok) {
-            throw new Error("Failed to exchange code for token");
-        }
+            throw new Error("Failed to exchange code for token")
+        };
 
         const tokenData = await tokenResponse.json();
 
-
-        const userInfoResponse = await fetch(
-            "https://www.googleapis.com/oauth2/v2/userinfo",
-            {
-                headers: { Authorization: `Bearer ${tokenData.access_token}` }
-            }
-        );
-
+        const userInfoResponse = await fetch("https://www.googleapis.com/oauth/v2/userinfo", {
+            headers: { Authorization: `Bearer ${tokenData.access_token}` }
+        })
         if (!userInfoResponse.ok) {
-            throw new Error("Failed to get user info");
-        }
+            throw new Error("Failed to get user info")
+        };
 
         const googleUser = await userInfoResponse.json();
 
-
         await connectDB();
 
-
-        let user = await UserModel.findOne({ googleId: googleUser.id });
+        let user = await UserModel.findOne({
+            googleId: googleUser.id
+        });
 
         if (!user) {
+            if (!googleUser.verified_email) {
+                throw new Error("Google email not verified");
+            }
             const existingEmailUser = await UserModel.findOne({
                 email: googleUser.email
             });
-
             if (existingEmailUser) {
-
                 existingEmailUser.googleId = googleUser.id;
                 existingEmailUser.isVerified = true;
                 await existingEmailUser.save();
                 user = existingEmailUser;
             } else {
-
                 user = new UserModel({
                     email: googleUser.email,
                     username: googleUser.email.split("@")[0] + "_" + Date.now(),
@@ -85,12 +91,12 @@ export async function GET(req: NextRequest) {
                 });
                 await user.save();
 
-
-                await sendWelcome(user.email, user.username);
+                sendWelcome(user.email, user.username).catch((err) =>
+                    console.error("Failed to send welcome email:", err)
+                );
             }
+
         }
-
-
         const accessToken = generateAccessToken({
             userId: user._id.toString(),
             email: user.email,
@@ -99,36 +105,36 @@ export async function GET(req: NextRequest) {
             twoFactorEnabled: user.twoFactorEnabled
         });
 
-        const refreshToken = generateRefreshToken(user._id.toString());
+        const refreshToken = generateRefreshToken(
+            user._id.toString()
+        );
 
         user.lastLogin = new Date();
         await user.save();
 
-        const cookieStore = await cookies();
 
         cookieStore.set("accessToken", accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 60 * 60,
             path: "/"
         });
-
         cookieStore.set("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
             maxAge: 30 * 24 * 60 * 60,
             path: "/"
         });
+        return NextResponse.redirect(new URL("/dashboard", req.url))
 
-        return NextResponse.redirect(new URL("/dashboard", req.url));
 
     } catch (error) {
         console.error("Google OAuth Error:", error);
 
         return NextResponse.redirect(
             new URL("/login?error=oauth_failed", req.url)
-        );
+        )
     }
 }
