@@ -26,7 +26,7 @@ export default function TwoFASetup() {
         secret: string;
     } | null>(null);
 
-    // ✅ FIX 1: Restore backup codes from sessionStorage on mount
+    
     useEffect(() => {
         const savedCodes = sessionStorage.getItem(BACKUP_CODES_SESSION_KEY);
         if (savedCodes) {
@@ -40,7 +40,6 @@ export default function TwoFASetup() {
         }
     }, []);
 
-    // ✅ FIX 2: Warn before page unload if backup codes not downloaded
     useEffect(() => {
         if (step === "complete" && backupCodes.length > 0 && !codesDownloaded) {
             const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -54,12 +53,10 @@ export default function TwoFASetup() {
         }
     }, [step, backupCodes, codesDownloaded]);
 
-    // ✅ FIX 3: Initialize setup ONCE and preserve data
     useEffect(() => {
         if (step === "setup" && !initialSetupData) {
             initialize2FASetup();
         } else if (step === "setup" && initialSetupData) {
-            // Restore previous setup data when going back
             setQrCode(initialSetupData.qrCode);
             setSecret(initialSetupData.secret);
         }
@@ -72,14 +69,14 @@ export default function TwoFASetup() {
             const response = await fetch("/api/auth/2fa/setup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                credentials: "include", // ✅ FIX 4: Include cookies
+                credentials: "include", 
             });
             const result = await response.json();
             if (!response.ok) {
                 throw new Error(result.message || "Failed to setup two factor authentication");
             }
 
-            // ✅ FIX 3: Store initial setup data
+
             const setupData = {
                 qrCode: result.qrCode,
                 secret: result.secret,
@@ -106,7 +103,7 @@ export default function TwoFASetup() {
             const response = await fetch("/api/auth/2fa/verify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                credentials: "include", // ✅ FIX 4: Include cookies
+                credentials: "include",
                 body: JSON.stringify({ twoFACode: verificationCode }),
             });
             const result = await response.json();
@@ -149,7 +146,6 @@ export default function TwoFASetup() {
         a.click();
         URL.revokeObjectURL(url);
 
-        // ✅ Mark as downloaded
         setCodesDownloaded(true);
     };
 
@@ -160,19 +156,19 @@ export default function TwoFASetup() {
         );
         if (!confirmLeave) return;
     }
-        // ✅ Clear backup codes from sessionStorage
+
         sessionStorage.removeItem(BACKUP_CODES_SESSION_KEY);
-        // ✅ FIX 5: Use Next.js router instead of window.location
+
         router.push("/settings/security");
     };
 
-    // ✅ FIX 3: Show warning when going back
+
     const handleBackToSetup = () => {
         const confirmBack = confirm(
             "Going back will generate a NEW QR code. If you already scanned the previous code, you'll need to scan the new one. Continue?"
         );
         if (confirmBack) {
-            // Reset to generate new setup
+
             setInitialSetupData(null);
             setQrCode("");
             setSecret("");
@@ -311,7 +307,7 @@ export default function TwoFASetup() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {/* ✅ Warning if not downloaded */}
+
                 {!codesDownloaded && (
                     <Alert>
                         <AlertTriangle className="h-4 w-4" />
