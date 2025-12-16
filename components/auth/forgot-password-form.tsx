@@ -127,7 +127,7 @@ export default function ForgotPasswordForm() {
                         <Input
                             id="email"
                             type="email"
-                            placeholder="john@example.com"
+                            placeholder="example@example.com"
                             {...register("email")}
                             disabled={isLoading}
                             aria-invalid={!!errors.email}
