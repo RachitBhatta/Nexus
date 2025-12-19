@@ -43,8 +43,14 @@ export default async function ProtectedLayout({
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
+            {/* ✅ NAVBAR FOR LOGGED-IN USERS */}
             <Header user={user} />
-            <main className="flex-1 pt-16">{children}</main>
+
+            {/* Content with top padding for fixed header */}
+            <main className="flex-1 pt-16">
+                {children}
+            </main>
+
             <Footer />
         </div>
     );
