@@ -5,6 +5,7 @@ export interface User extends Document{
     username:string,
     password:string,
     email:string,
+    avatar:string,
 
     //Email verification
     VerifyOTP?:string,
@@ -67,7 +68,12 @@ export const UserSchema: Schema<User> = new Schema(
         return !this.googleId && !this.githubId;
       }
     },
-    
+    //Users Avatar
+    avatar:{
+      type:String,
+      default:() => "/defaultAvatar.svg"
+    }
+    , 
     // Email verification
     VerifyOTP: {
       type: String ,
