@@ -34,6 +34,9 @@ export const ProfilePage=()=>{
                 setIsLoading(true);
                 setError("");
                 const userRes=await fetch("/api/user");
+                if(!userRes.ok){
+                    throw new Error("Error in fetching data")
+                }
                 const userData=await userRes.json();
             } catch (error) {
                 console.error("Error Fetching Data",error)
@@ -41,6 +44,7 @@ export const ProfilePage=()=>{
                 setIsLoading(false)
             }
         }
+        fetchData();
     },[])
     
 

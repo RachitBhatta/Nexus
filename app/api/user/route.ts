@@ -1,7 +1,7 @@
 import { decodeToken } from "@/lib/auth/token";
 import UserModel from "@/lib/db/Models/User.model";
 import { cookies } from "next/headers";
-import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 
 export async function GET(){
@@ -9,23 +9,23 @@ export async function GET(){
         const cookieStore=await cookies();
         const refreshToken=cookieStore.get("refreshToken")?.value;
         if(!refreshToken){
-            return null;
+            return NextResponse.json(null, { status: 401 });
         }
         let decoded;
         try {
             decoded=decodeToken(refreshToken);
-        } catch (error) {
-            return null;
+        } catch {
+            return NextResponse.json(null, { status: 401 });
         }
         const user=await UserModel.findById(decoded?.userId);
         if(!user){
-            return null;
+            return NextResponse.json(null, { status: 404 });
         }
-        return {
+        return NextResponse.json({
             username:user.username,
             profilePicture:user.avatar
-        }
-    } catch (error) {
-        return null;
+        });
+    } catch {
+        return NextResponse.json(null, { status: 500 });
     }
 }
