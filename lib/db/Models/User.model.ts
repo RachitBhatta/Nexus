@@ -7,6 +7,11 @@ export interface User extends Document{
     email:string,
     avatar:string,
 
+    //Followers
+    followers:string,
+    following:string,
+    //Projects
+    projects:string[];
     //Email verification
     VerifyOTP?:string,
     OTPexpiry?:Date,
