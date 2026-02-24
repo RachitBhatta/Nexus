@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react"
 import defaultAvatar from "@/public/defaultAvatar.svg"
 import { Code2, GitBranch, UsersRound } from "lucide-react";
-import { useParams } from "next/navigation";
-import { cookies } from "next/headers";
 interface recentProjects{
     id:string,
     name:string,
@@ -14,7 +12,7 @@ interface recentProjects{
 export const ProfilePage=()=>{
     
     const [isLoading,setIsLoading]=useState(false);
-    const [description,setDescription]=useState("");
+    const [biograph,setBiograph]=useState("");
     const [profilePicture,setProfilePicture]=useState(defaultAvatar);
     const [error,setError]=useState("");
     const [stats,setStats]=useState([]);
@@ -22,6 +20,8 @@ export const ProfilePage=()=>{
     const [skills,setSkills]=useState([]);
     const [follower,setFollower]=useState("");
     const [following,setFollowing]=useState("");
+    const [country,setCountry]=useState("");
+    const 
     const icons={
         Projects:<Code2 className="h-5 w-5" />,
         Contributions:<GitBranch className="h-5 w-5" />,

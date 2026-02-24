@@ -1,17 +1,20 @@
 import { Schema, Document } from "mongoose";
 import { Message,MessageSchema } from "./Message.model";
 import mongoose from "mongoose";
+import { IAchievement,AchievementsModel } from "./Achievement.model";
 export interface User extends Document{   
     username:string,
     password:string,
     email:string,
     avatar:string,
+    coverPicture:string
 
     //Followers
     followers:string,
     following:string,
     //Projects
-    projects:string[];
+    projects:string[],
+
     //Email verification
     VerifyOTP?:string,
     OTPexpiry?:Date,
@@ -24,7 +27,10 @@ export interface User extends Document{
 
     //Messages
     isMessageAccepted:boolean,
-    message:Message[]
+    message:Message[],
+
+    //AchieveMents
+    achievements:IAchievement[],
 
     //Security Tracking
     lastLogin?:Date,  
@@ -115,7 +121,16 @@ export const UserSchema: Schema<User> = new Schema(
       default: true
     },
     message: [MessageSchema],
-    
+    achievements:[{
+      achievementId:{
+        type:Schema.Types.ObjectId,
+        ref:"Achievement",
+      },
+      earnedAt:{
+        type:Date,
+        default:Date.now()
+      }
+    }],
     // Security tracking
     lastLogin: {
       type: Date
