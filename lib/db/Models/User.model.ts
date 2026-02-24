@@ -10,8 +10,8 @@ export interface User extends Document{
     coverPicture:string
 
     //Followers
-    followers:string,
-    following:string,
+    followers:mongoose.Types.ObjectId,
+    following:mongoose.Types.ObjectId,
     //Projects
     projects:string[],
 
@@ -79,6 +79,14 @@ export const UserSchema: Schema<User> = new Schema(
         return !this.googleId && !this.githubId;
       }
     },
+    following:{
+      type:Schema.Types.ObjectId,
+      ref:"User"
+    },
+    followers:{
+      type:Schema.Types.ObjectId,
+      ref:"User"
+    },
     //Users Avatar
     avatar:{
       type:String,
@@ -128,13 +136,14 @@ export const UserSchema: Schema<User> = new Schema(
       },
       earnedAt:{
         type:Date,
-        default:Date.now()
+        default:Date.now
       }
     }],
     // Security tracking
     lastLogin: {
       type: Date
     },
+    
     failedLoginAttempts: {
       type: Number,
       default: 0

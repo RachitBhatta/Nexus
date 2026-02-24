@@ -5,7 +5,9 @@ export interface IAchievement{
     imageUrl:string,
     points:number,
     category:"milestone"|"collaboration"|"AI"|"leadership",
-    rarity:"common"|"rare"|"epic"|"legendary"
+    rarity:"common"|"rare"|"epic"|"legendary",
+    createdAt?: Date,
+    updatedAt?: Date
 }
 
 export const AchievementSchema:Schema<IAchievement>=new Schema({
